@@ -7,13 +7,13 @@ class Mastermind
   def initialize
     @comp_p = ComputerPlayer.new
     @human_p = HumanPlayer.new
-    @secret_code = @computer_player.create_code
+    @secret_code = @comp_p.create_code
 
     welcome_message
   end
 
   def start
-    puts "Let's start!"
+    puts "\n Let's start!"
     main_loop
   end
 
@@ -21,7 +21,7 @@ class Mastermind
     "To be implemented"
   end
 
-  private:
+  private
 
   def welcome_message
     puts "Welcome to Mastermind!\n\n"
@@ -29,6 +29,6 @@ class Mastermind
     puts "- Guess the 4-color secret code."
     puts "- Colors are represented by numbers (1-6)."
     puts "- You have 12 attempts."
-    puts "- Feedback about the accuracy of your guess is provided after each guess.\n"
+    puts "- Feedback about the accuracy of your guess is provided after each guess."
   end
 end
