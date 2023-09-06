@@ -20,13 +20,10 @@ class Mastermind
   end
 
   def main_loop
-    until @remaining_turns.zero?
+    until @remaining_turns.zero? || @is_correct == true
       puts "\nAttempts left: #{@remaining_turns}"
       print_previous_guesses
-      if make_guess == @secret_code
-        @is_correct = true
-        break
-      end
+      @is_correct = true if make_guess == @secret_code
       @remaining_turns -= 1
     end
 
