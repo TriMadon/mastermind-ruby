@@ -2,6 +2,7 @@
 
 require './computer_player'
 require './human_player'
+require './guess'
 
 class Mastermind
   def initialize
@@ -23,7 +24,7 @@ class Mastermind
     until @remaining_turns.zero? || @is_correct == true
       puts "\nAttempts left: #{@remaining_turns}"
       print_previous_guesses
-      @is_correct = true if make_guess == @secret_code
+      @is_correct = true if make_guess.value == @secret_code
       @remaining_turns -= 1
     end
 
