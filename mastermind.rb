@@ -2,7 +2,6 @@
 
 require './computer_player'
 require './human_player'
-require './guess'
 
 class Mastermind
   def initialize

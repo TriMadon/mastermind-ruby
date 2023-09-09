@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './guess'
+require './code'
 
 class HumanPlayer
   attr_reader :feedback_list
@@ -12,7 +12,7 @@ class HumanPlayer
   def make_guess
     loop do
       print "\nEnter your guess (e.g., 1234): "
-      guess = Guess.new(gets.chomp.gsub(/\s+/, ''))
+      guess = Code.new(gets.chomp.gsub(/\s+/, ''))
 
       return guess if guess.valid?
 
