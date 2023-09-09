@@ -16,7 +16,7 @@ class Mastermind
 
   def start
     ask_if_human_wants_to_be_code_maker
-    @breaker.create_code
+    @maker.create_code
     puts "\nLet's start!"
     main_loop
   end
@@ -68,10 +68,10 @@ class Mastermind
   end
 
   def win_message
-    puts "\nYou have guessed the secret code correctly. Congratulations!"
+    puts "\n#{@breaker} player has cracked the secret code. Congratulations!"
   end
 
   def loss_message
-    puts "\nYou have failed to guess the secret code within 12 turns"
+    puts "\n#{@breaker} player has failed to crack the secret code within 12 turns..."
   end
 end
