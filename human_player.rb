@@ -3,18 +3,19 @@
 require './code'
 
 class HumanPlayer
-  attr_reader :feedback_list
+  attr_reader :feedback_list, :last_guess
 
   def initialize
     @feedback_list = []
+    @last_guess = Code.new('0000')
   end
 
   def make_guess
     loop do
       print "\nEnter your guess (e.g., 1234): "
-      guess = Code.new(gets.chomp.gsub(/\s+/, ''))
+      @last_guess = Code.new(gets.chomp.gsub(/\s+/, ''))
 
-      return guess if guess.valid?
+      return @last_guess if @last_guess.valid?
 
       puts 'Invalid input. Please enter a 4-digit guess using numbers 1 to 6.'
     end

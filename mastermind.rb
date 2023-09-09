@@ -20,17 +20,15 @@ class Mastermind
   end
 
   def main_loop
-    until @remaining_turns.zero? || @is_correct == true
+    until @remaining_turns.zero? || @computer.guess_matches?(@human.last_guess)
       puts "\nAttempts left: #{@remaining_turns}"
       print_previous_guesses
-      guess = make_guess
-      @human.take_feedback(@computer, guess)
-      @is_correct = true if @computer.guess_matches?(guess)
+      make_guess
       @remaining_turns -= 1
       $stdout.clear_screen
     end
 
-    @is_correct ? win_message : loss_message
+    @computer.guess_matches?(@human.last_guess) ? win_message : loss_message
   end
 
   private
@@ -52,7 +50,7 @@ class Mastermind
   end
 
   def make_guess
-    @human.make_guess
+    @human.take_feedback(@computer, @human.make_guess)
   end
 
   def win_message
