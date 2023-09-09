@@ -2,12 +2,12 @@
 
 require './computer_player'
 require './human_player'
+require 'io/console'
 
 class Mastermind
   def initialize
     @computer = ComputerPlayer.new
     @human = HumanPlayer.new
-    @secret_code = @computer.create_code
     @remaining_turns = 12
     @is_correct = false
 
@@ -20,17 +20,15 @@ class Mastermind
   end
 
   def main_loop
-    until @remaining_turns.zero?
+    until @remaining_turns.zero? || @computer.guess_matches?(@human.last_guess)
       puts "\nAttempts left: #{@remaining_turns}"
       print_previous_guesses
-      if make_guess == @secret_code
-        @is_correct = true
-        break
-      end
+      make_guess
       @remaining_turns -= 1
+      $stdout.clear_screen
     end
 
-    @is_correct ? win_message : loss_message
+    @computer.guess_matches?(@human.last_guess) ? win_message : loss_message
   end
 
   private
@@ -45,11 +43,14 @@ class Mastermind
   end
 
   def print_previous_guesses
-    puts "\nPrevious guesses are printed here:"
+    puts "\nPrevious guesses:"
+    @human.feedback_list.each_with_index do |feedback, i|
+      puts "#{i + 1}. #{feedback[0]}   #{feedback[1]}"
+    end
   end
 
   def make_guess
-    @human.make_guess
+    @human.take_feedback(@computer, @human.make_guess)
   end
 
   def win_message
