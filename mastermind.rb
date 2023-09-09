@@ -6,8 +6,8 @@ require 'io/console'
 
 class Mastermind
   def initialize
-    @computer = ComputerPlayer.new
-    @human = HumanPlayer.new
+    @maker = nil
+    @breaker = nil
     @remaining_turns = 12
     @is_correct = false
 
@@ -15,12 +15,14 @@ class Mastermind
   end
 
   def start
-    puts "\n Let's start!"
+    ask_if_human_wants_to_be_code_maker
+    @breaker.create_code
+    puts "\nLet's start!"
     main_loop
   end
 
   def main_loop
-    until @remaining_turns.zero? || @computer.guess_matches?(@human.last_guess)
+    until @remaining_turns.zero? || @maker.guess_matches?(@breaker.last_guess)
       puts "\nAttempts left: #{@remaining_turns}"
       print_previous_guesses
       make_guess
@@ -28,7 +30,7 @@ class Mastermind
       $stdout.clear_screen
     end
 
-    @computer.guess_matches?(@human.last_guess) ? win_message : loss_message
+    @maker.guess_matches?(@breaker.last_guess) ? win_message : loss_message
   end
 
   private
@@ -40,17 +42,29 @@ class Mastermind
     puts '- Colors are represented by numbers (1-6).'
     puts '- You have 12 attempts.'
     puts '- Feedback about the accuracy of your guess is provided after each guess.'
+    puts '- You can choose being the code maker.'
+  end
+
+  def ask_if_human_wants_to_be_code_maker
+    puts "\nDo you wish to be the code maker? y/n: "
+    if gets.chomp.gsub(/\s+/, '').downcase == 'y'
+      @maker = HumanPlayer.new
+      @breaker = ComputerPlayer.new
+    else
+      @maker = ComputerPlayer.new
+      @breaker = HumanPlayer.new
+    end
   end
 
   def print_previous_guesses
     puts "\nPrevious guesses:"
-    @human.feedback_list.each_with_index do |feedback, i|
+    @breaker.feedback_list.each_with_index do |feedback, i|
       puts "#{i + 1}. #{feedback[0]}   #{feedback[1]}"
     end
   end
 
   def make_guess
-    @human.take_feedback(@computer, @human.make_guess)
+    @breaker.take_feedback(@maker, @breaker.make_guess)
   end
 
   def win_message
