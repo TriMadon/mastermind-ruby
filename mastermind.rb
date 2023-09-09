@@ -8,7 +8,6 @@ class Mastermind
   def initialize
     @computer = ComputerPlayer.new
     @human = HumanPlayer.new
-    @secret_code = @computer.create_code
     @remaining_turns = 12
     @is_correct = false
 
@@ -24,7 +23,9 @@ class Mastermind
     until @remaining_turns.zero? || @is_correct == true
       puts "\nAttempts left: #{@remaining_turns}"
       print_previous_guesses
-      @is_correct = true if make_guess.value == @secret_code
+      guess = make_guess
+      @human.take_feedback(@computer, guess)
+      @is_correct = true if @computer.guess_matches?(guess)
       @remaining_turns -= 1
     end
 
@@ -43,7 +44,10 @@ class Mastermind
   end
 
   def print_previous_guesses
-    puts "\nPrevious guesses are printed here:"
+    puts "\nPrevious guesses:"
+    @human.feedback_list.each_with_index do |feedback, i|
+      puts "#{i + 1}. #{feedback[0]}   #{feedback[1]}"
+    end
   end
 
   def make_guess
