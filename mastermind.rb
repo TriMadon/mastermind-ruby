@@ -2,6 +2,7 @@
 
 require './computer_player'
 require './human_player'
+require 'io/console'
 
 class Mastermind
   def initialize
@@ -26,6 +27,7 @@ class Mastermind
       @human.take_feedback(@computer, guess)
       @is_correct = true if @computer.guess_matches?(guess)
       @remaining_turns -= 1
+      $stdout.clear_screen
     end
 
     @is_correct ? win_message : loss_message
