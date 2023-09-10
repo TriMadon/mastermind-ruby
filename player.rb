@@ -4,9 +4,6 @@ class Player
   attr_accessor :opponent
   attr_reader :feedback_list, :last_guess
 
-  CODE_LENGTH = 4
-  COLOR_VARIATIONS = 6
-
   def initialize
     @feedback_list = []
     @last_guess = Code.new('0000')

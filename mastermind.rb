@@ -16,6 +16,7 @@ class Mastermind
 
   def start
     ask_if_human_wants_to_be_code_maker
+    @breaker.intelligence = adjust_computer_intelligence if @breaker.is_a? ComputerPlayer
     @maker.create_code
     puts "\nLet's start!"
     main_loop
@@ -57,8 +58,21 @@ class Mastermind
     @breaker.opponent = @maker
   end
 
+  def adjust_computer_intelligence
+    intel = nil
+    while intel.to_i.negative? || intel.to_i > 10 || intel.nil?
+      puts "\nPlease adjust the computer\'s intelligence level from 0 to 10 (10 being the highest):"
+      begin
+        intel = Integer(gets.chomp.gsub(/\s+/, ''))
+      rescue ArgumentError
+        puts "\nThat's not a valid input. Try again."
+      end
+    end
+    intel
+  end
+
   def print_previous_guesses
-    puts "\nPrevious guesses:"
+    puts "\nPrevious guesses:" unless @breaker.feedback_list.empty?
     @breaker.feedback_list.each_with_index do |feedback, i|
       puts "#{i + 1}. #{feedback[0]}   #{feedback[1]}"
     end
@@ -73,7 +87,7 @@ class Mastermind
   end
 
   def loss_message
-    puts "\nThe secret code was: #{@maker.secret_code}" if @maker.is_a? ComputerPlayer
     puts "\n#{@breaker} player has failed to crack the secret code within 12 turns..."
+    puts "\nThe secret code was: #{@maker.secret_code}" if @maker.is_a? ComputerPlayer
   end
 end
