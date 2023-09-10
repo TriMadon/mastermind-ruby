@@ -17,14 +17,14 @@ class Mastermind
     ask_if_human_wants_to_be_code_maker
     @breaker.intelligence = adjust_computer_intelligence if @breaker.is_a? ComputerPlayer
     @maker.create_code
-    puts "\nLet's start!"
+    $stdout.clear_screen
     main_loop
   end
 
   def main_loop
     until @remaining_turns.zero? || @maker.guess_matches?(@breaker.last_guess)
-      puts "\nAttempts left: #{@remaining_turns}"
-      print_previous_guesses
+      print_header
+      print_previous_guesses unless @breaker.feedback_list.empty?
       make_guess
       @remaining_turns -= 1
       $stdout.clear_screen
@@ -37,7 +37,10 @@ class Mastermind
   private
 
   def welcome_message
-    puts "Welcome to Mastermind!\n\n"
+    puts '╔════════════════════════════════════════════════╗'
+    puts '║                   Welcome to                   ║'
+    puts '║                   Mastermind!                  ║'
+    puts "╚════════════════════════════════════════════════╝\n\n"
     puts 'Instructions:'
     puts '- Guess the 4-color secret code.'
     puts '- Colors are represented by numbers (1-6).'
@@ -71,11 +74,20 @@ class Mastermind
     intel
   end
 
+  def print_header
+    puts '╔════════════════════════════════════════════════╗'
+    puts '║                   Mastermind                   ║'
+    puts '╚════════════════════════════════════════════════╝'
+    puts "\nAttempts left: #{@remaining_turns}"
+  end
+
   def print_previous_guesses
-    puts "\nPrevious guesses:" unless @breaker.feedback_list.empty?
+    puts "\n──────────────────────────────────────────────────"
+    puts 'Previous guesses:'
     @breaker.feedback_list.each_with_index do |feedback, i|
       puts "#{i + 1}. #{feedback[0]}   #{feedback[1]}"
     end
+    puts '──────────────────────────────────────────────────'
   end
 
   def make_guess
