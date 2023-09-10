@@ -8,6 +8,10 @@ class Feedback
     @correct_positions = corr_positions
   end
 
+  def ==(other)
+    @correct_colors == other.correct_colors && @correct_positions == other.correct_positions
+  end
+
   def to_s
     correct_colors_text = "#{@correct_colors} correct color"
     correct_colors_text += 's' if @correct_colors > 1

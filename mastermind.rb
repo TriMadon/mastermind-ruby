@@ -6,8 +6,8 @@ require 'io/console'
 
 class Mastermind
   def initialize
-    @computer = ComputerPlayer.new
-    @human = HumanPlayer.new
+    @maker = nil
+    @breaker = nil
     @remaining_turns = 12
     @is_correct = false
 
@@ -15,12 +15,15 @@ class Mastermind
   end
 
   def start
-    puts "\n Let's start!"
+    ask_if_human_wants_to_be_code_maker
+    @breaker.intelligence = adjust_computer_intelligence if @breaker.is_a? ComputerPlayer
+    @maker.create_code
+    puts "\nLet's start!"
     main_loop
   end
 
   def main_loop
-    until @remaining_turns.zero? || @computer.guess_matches?(@human.last_guess)
+    until @remaining_turns.zero? || @maker.guess_matches?(@breaker.last_guess)
       puts "\nAttempts left: #{@remaining_turns}"
       print_previous_guesses
       make_guess
@@ -28,7 +31,7 @@ class Mastermind
       $stdout.clear_screen
     end
 
-    @computer.guess_matches?(@human.last_guess) ? win_message : loss_message
+    @maker.guess_matches?(@breaker.last_guess) ? win_message : loss_message
   end
 
   private
@@ -40,24 +43,51 @@ class Mastermind
     puts '- Colors are represented by numbers (1-6).'
     puts '- You have 12 attempts.'
     puts '- Feedback about the accuracy of your guess is provided after each guess.'
+    puts '- You can choose being the code maker.'
+  end
+
+  def ask_if_human_wants_to_be_code_maker
+    puts "\nDo you wish to be the code maker? y/n: "
+    if gets.chomp.gsub(/\s+/, '').downcase == 'y'
+      @maker = HumanPlayer.new
+      @breaker = ComputerPlayer.new
+    else
+      @maker = ComputerPlayer.new
+      @breaker = HumanPlayer.new
+    end
+    @breaker.opponent = @maker
+  end
+
+  def adjust_computer_intelligence
+    intel = nil
+    while intel.to_i.negative? || intel.to_i > 10 || intel.nil?
+      puts "\nPlease adjust the computer\'s intelligence level from 0 to 10 (10 being the highest):"
+      begin
+        intel = Integer(gets.chomp.gsub(/\s+/, ''))
+      rescue ArgumentError
+        puts "\nThat's not a valid input. Try again."
+      end
+    end
+    intel
   end
 
   def print_previous_guesses
-    puts "\nPrevious guesses:"
-    @human.feedback_list.each_with_index do |feedback, i|
+    puts "\nPrevious guesses:" unless @breaker.feedback_list.empty?
+    @breaker.feedback_list.each_with_index do |feedback, i|
       puts "#{i + 1}. #{feedback[0]}   #{feedback[1]}"
     end
   end
 
   def make_guess
-    @human.take_feedback(@computer, @human.make_guess)
+    @breaker.make_guess
   end
 
   def win_message
-    puts "\nYou have guessed the secret code correctly. Congratulations!"
+    puts "\n#{@breaker} player has cracked the secret code. Congratulations!"
   end
 
   def loss_message
-    puts "\nYou have failed to guess the secret code within 12 turns"
+    puts "\n#{@breaker} player has failed to crack the secret code within 12 turns..."
+    puts "\nThe secret code was: #{@maker.secret_code}" if @maker.is_a? ComputerPlayer
   end
 end

@@ -2,41 +2,75 @@
 
 require './feedback'
 require './code'
+require './player'
 
-class ComputerPlayer
-  CODE_LENGTH = 4
-  COLOR_VARIATIONS = 6
+class ComputerPlayer < Player
+  attr_accessor :intelligence
+  attr_reader :secret_code
+
+  STARTING_GUESS = Code.new('1122')
 
   def initialize
-    @secret_code = create_code
+    super
+    @candidates = all_candidate_codes
+    @last_guess = STARTING_GUESS
+    @intelligence = 10
   end
 
   def create_code
-    code = ''
-    CODE_LENGTH.times { code += (rand * COLOR_VARIATIONS).ceil.to_s }
-    Code.new(code)
+    @secret_code = Code.random
   end
 
-  def give_feedback(guess)
-    corr_colors = calculate_correct_colors(guess.value.chars)
-    corr_positions = calculate_correct_positions(guess.value.chars)
-
-    Feedback.new(corr_colors, corr_positions)
+  def make_guess
+    if rand < @intelligence * 0.1 && !@feedback_list.empty?
+      eliminate_invalid_candidates
+      @last_guess = retrieve_guess_from_candidates
+    else
+      @last_guess = Code.random
+    end
+    take_feedback(@last_guess)
+    puts 'Computer is guessing...'
+    sleep rand * 3 + 1
+    @last_guess
   end
 
-  def guess_matches?(guess)
-    guess == @secret_code
+  def to_s
+    'Computer'
   end
 
   private
 
-  def calculate_correct_colors(gss)
-    sec = @secret_code.value.chars
-    (sec & gss).flat_map { |n| [n] * [sec.count(n), gss.count(n)].min }.count
+  def all_candidate_codes
+    (1111..6667).to_a.map { |code| Code.new(code.to_s) }.select(&:valid?)
   end
 
-  def calculate_correct_positions(gss)
-    sec = @secret_code.value.chars
-    sec.zip(gss).count { |item| item[0] == item[1] }
+  def eliminate_invalid_candidates
+    last_gss_arr = @last_guess.value.chars
+    @candidates.select! do |candidate|
+      cand_arr = candidate.value.chars
+      feedback = Feedback.new(common_colors(cand_arr, last_gss_arr), identical_positions(cand_arr, last_gss_arr))
+      feedback == @feedback_list.last[1]
+    end
+  end
+
+  def retrieve_guess_from_candidates
+    @candidates.length == 1 ? @candidates[0] : edit_based_on_intelligence(@candidates.shift)
+  end
+
+  def edit_based_on_intelligence(guess)
+    gss = guess.value
+    mutate_chance = 1 - (@intelligence * 0.1)
+
+    if rand < mutate_chance
+      changes = ((10 - @intelligence) * 0.4).ceil
+      changes.times { mutate_random_position(gss) }
+    end
+
+    Code.new(gss)
+  end
+
+  def mutate_random_position(gss)
+    position_to_mutate = (rand * Code::CODE_LENGTH).floor
+    gss[position_to_mutate] = (rand * Code::COLOR_VARIATIONS).ceil.to_s
   end
 end
