@@ -54,6 +54,7 @@ class Mastermind
       @maker = ComputerPlayer.new
       @breaker = HumanPlayer.new
     end
+    @breaker.opponent = @maker
   end
 
   def print_previous_guesses
@@ -64,7 +65,7 @@ class Mastermind
   end
 
   def make_guess
-    @breaker.take_feedback(@maker, @breaker.make_guess)
+    @breaker.make_guess
   end
 
   def win_message
@@ -72,6 +73,7 @@ class Mastermind
   end
 
   def loss_message
+    puts "\nThe secret code was: #{@maker.secret_code}" if @maker.is_a? ComputerPlayer
     puts "\n#{@breaker} player has failed to crack the secret code within 12 turns..."
   end
 end

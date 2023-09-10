@@ -20,7 +20,10 @@ class HumanPlayer < Player
       print "\nEnter your guess (e.g., 1234): "
       @last_guess = Code.new(gets.chomp.gsub(/\s+/, ''))
 
-      return @last_guess if @last_guess.valid?
+      if @last_guess.valid?
+        take_feedback(@last_guess)
+        return @last_guess
+      end
 
       puts 'Invalid input. Please enter a 4-digit guess using numbers 1 to 6.'
     end
