@@ -21,19 +21,6 @@ class Mastermind
     main_loop
   end
 
-  def main_loop
-    until @remaining_turns.zero? || @maker.guess_matches?(@breaker.last_guess)
-      print_header
-      print_previous_guesses unless @breaker.feedback_list.empty?
-      make_guess
-      @remaining_turns -= 1
-      $stdout.clear_screen
-    end
-
-    @maker.guess_matches?(@breaker.last_guess) ? win_message : loss_message
-    ask_retry
-  end
-
   private
 
   def welcome_message
@@ -47,6 +34,19 @@ class Mastermind
     puts '- You have 12 attempts.'
     puts '- Feedback about the accuracy of your guess is provided after each guess.'
     puts '- You can choose being the code maker.'
+  end
+
+  def main_loop
+    until @remaining_turns.zero? || @maker.guess_matches?(@breaker.last_guess)
+      print_header
+      print_previous_guesses unless @breaker.feedback_list.empty?
+      make_guess
+      @remaining_turns -= 1
+      $stdout.clear_screen
+    end
+
+    @maker.guess_matches?(@breaker.last_guess) ? win_message : loss_message
+    ask_retry
   end
 
   def ask_if_human_wants_to_be_code_maker

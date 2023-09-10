@@ -12,7 +12,7 @@ class ComputerPlayer < Player
 
   def initialize
     super
-    @candidates = all_candidate_codes
+    @candidates = generate_candidate_codes
     @last_guess = STARTING_GUESS
     @intelligence = 10
   end
@@ -40,7 +40,7 @@ class ComputerPlayer < Player
 
   private
 
-  def all_candidate_codes
+  def generate_candidate_codes
     (1111..6667).to_a.map { |code| Code.new(code.to_s) }.select(&:valid?)
   end
 
