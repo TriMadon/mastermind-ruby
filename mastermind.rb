@@ -9,7 +9,6 @@ class Mastermind
     @maker = nil
     @breaker = nil
     @remaining_turns = 12
-    @is_correct = false
 
     welcome_message
   end
@@ -32,6 +31,7 @@ class Mastermind
     end
 
     @maker.guess_matches?(@breaker.last_guess) ? win_message : loss_message
+    ask_retry
   end
 
   private
@@ -48,7 +48,7 @@ class Mastermind
 
   def ask_if_human_wants_to_be_code_maker
     puts "\nDo you wish to be the code maker? y/n: "
-    if gets.chomp.gsub(/\s+/, '').downcase == 'y'
+    if read_yes_or_no == 'y'
       @maker = HumanPlayer.new
       @breaker = ComputerPlayer.new
     else
@@ -89,5 +89,20 @@ class Mastermind
   def loss_message
     puts "\n#{@breaker} player has failed to crack the secret code within 12 turns..."
     puts "\nThe secret code was: #{@maker.secret_code}" if @maker.is_a? ComputerPlayer
+  end
+
+  def ask_retry
+    puts "\nDo you wish to retry? y/n: "
+    if read_yes_or_no == 'y'
+      @remaining_turns = 12
+      start
+    else
+      puts "\nGame ends. Thank you for playing!"
+    end
+    @breaker.opponent = @maker
+  end
+
+  def read_yes_or_no
+    gets.chomp.gsub(/\s+/, '').downcase
   end
 end
