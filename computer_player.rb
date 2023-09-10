@@ -27,6 +27,8 @@ class ComputerPlayer < Player
       @last_guess = @candidates.shift
     end
     take_feedback(@last_guess)
+    puts 'Computer is guessing...'
+    sleep rand * 3 + 1
     @last_guess
   end
 
