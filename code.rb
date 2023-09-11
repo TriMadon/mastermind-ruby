@@ -13,7 +13,7 @@ class Code
   def self.random
     code = ''
     CODE_LENGTH.times { code += (rand * COLOR_VARIATIONS).ceil.to_s }
-    @secret_code = Code.new(code)
+    new(code)
   end
 
   def valid?
